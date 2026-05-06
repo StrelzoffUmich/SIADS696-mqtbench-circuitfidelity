@@ -27,7 +27,7 @@ Data sources :
       (Fidelity may vary based on the target), qubits ranging from 3-9, seeded.
     - Fidelity : Hellinger fidelity computed by simulating each circuit ideally and under FakeBrisbane noise profiles (package is 'qiskit-aer' 0.17.2, 'qiskit-ibm-runtine 0.46.1.
       FakeBrisbane  = IBM Eagle r3 127-qubit noise model simulator. 
-    - Reproducibility : Run python src/loader.py followed by python src/load/fidelity.py to regenerate utilized data from a clean repo clone.
+    - Reproducibility : Run python src/load/loader.py followed by python src/load/fidelity.py to regenerate utilized data from a clean repo clone.
 
 This project is not building on a previous Milestone I project. 
       
