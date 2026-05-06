@@ -1,0 +1,11 @@
+feature_a,feature_b,pearson_raw,partial_corr,controls
+fiedler_topology,program_communication,0.229365496312315,0.31107410254086826,"num_qubits,num_2q_gates"
+fiedler_topology,entanglement_ratio,-0.15715048522865607,-0.1901315324537731,"num_qubits,num_2q_gates"
+fiedler_topology,depth,0.16319045115388592,-0.03473606427386588,"num_qubits,num_2q_gates"
+fiedler_2q_weighted,program_communication,0.2690686484566333,0.2909865086414973,"num_qubits,num_2q_gates"
+fiedler_2q_weighted,num_2q_gates,0.9598141987830606,0.0,"num_qubits,num_2q_gates"
+spectral_entropy_topology,program_communication,-0.09111950557663114,0.2518497224773468,"num_qubits,num_2q_gates"
+laplacian_max_eig_topology,program_communication,0.13867546072172246,0.32402891024137664,"num_qubits,num_2q_gates"
+gini_2q_multiplicity,entanglement_ratio,0.12171632232548006,0.1588198086291614,"num_qubits,num_2q_gates"
+n_components,program_communication,-0.21201890406746499,-0.18423761658517374,"num_qubits,num_2q_gates"
+assortativity,program_communication,0.033859111417912355,0.11456292097953237,"num_qubits,num_2q_gates"

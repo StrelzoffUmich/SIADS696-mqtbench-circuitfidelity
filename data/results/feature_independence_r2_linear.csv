@@ -1,0 +1,22 @@
+candidate,r2_on_mqt,note
+n_components,0.18377317782919855,mostly independent
+num_unique_gates,0.21702055695382938,mostly independent
+gate_entropy,0.2536093447911171,mostly independent
+degree_variance,0.34277305191646434,mostly independent
+assortativity,0.36606662022628556,mostly independent
+graph_diameter,0.6212303811640526,mostly independent
+gini_2q_multiplicity,0.6613267233971538,mostly independent
+num_triangles,0.7042907503392932,partial overlap
+avg_clustering,0.7470978027090948,partial overlap
+max_degree,0.7769553003993441,partial overlap
+laplacian_max_eig_topology,0.7915592811929626,partial overlap
+fiedler_topology,0.7995866169240549,partial overlap
+spectral_gap_ratio_topology,0.8051836000397183,partial overlap
+log_estrada_index,0.8229288686131856,partial overlap
+has_2q_interactions,0.8244529539377106,partial overlap
+graph_density,0.8312184946769476,partial overlap
+spectral_entropy_2q_weighted,0.8397912457687582,partial overlap
+spectral_entropy_topology,0.8714889522751313,partial overlap
+twoq_temporal_locality,0.9364657700975584,partial overlap
+fiedler_2q_weighted,0.9455301778799879,partial overlap
+depth_per_qubit,0.9825287952785291,redundant
