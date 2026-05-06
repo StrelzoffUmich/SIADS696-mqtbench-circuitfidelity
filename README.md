@@ -17,3 +17,18 @@ For the purposes of pre-project analysis, we have developed a smaller 132 circui
 **Our next steps after we pin down features of interest is to use various statistical machine learning methods to effectively predict the fidelity values of FakeBrisbane's software emulation on various algorithms. This will reveal insights about the strucutre of quantum circuits.**
 
 This document will serve as the base for the finalized file structure and important methodological notes of the SIADS 696 project. 
+
+
+Quick start on analysis phase : 
+
+python 3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+python src/load/loader.py
+python src/load/check_corpus.py                                                      
+python src/feature_sel/extract_features.py     
+python src/load/fidelity.py --max-qubits 9     # Qubits above 9 cause certain algorithms to lock up. To be fixed/addressed.
+python src/feature_sel/experiment_fidelity.py                                               
+python src/feature_sel/visualize.py                                                         
+                                                                 
