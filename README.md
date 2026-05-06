@@ -14,6 +14,6 @@ This differentiates our project from mqt.predictor, which treats quantum circuit
 
 For the purposes of pre-project analysis, we have developed a smaller 132 circuit corpus, with plans to scale upwards, likely using HPC resources or Colab hours.
 
-**Our planned work is to use various statistical machine learning methods to effectively predict the fidelity values of FakeBrisbane's software emulation on various algorithms.**
+**Our next steps after we pin down features of interest is to use various statistical machine learning methods to effectively predict the fidelity values of FakeBrisbane's software emulation on various algorithms. This will reveal insights about the strucutre of quantum circuits.**
 
 This document will serve as the base for the finalized file structure and important methodological notes of the SIADS 696 project. 
