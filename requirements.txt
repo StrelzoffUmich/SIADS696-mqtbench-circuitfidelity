@@ -9,12 +9,14 @@
 #     qiskit-aer
 #     qiskit-ibm-runtime  (FakeBrisbane noise model)
 #     pandas
-#     seaborn  (visualizations; pulls matplotlib)
+#     seaborn   (visualizations; pulls matplotlib)
+#     catboost  (gradient-boosted feature-importance test bed; pulls plotly + graphviz)
 # Everything else is transitive — pinned because Qiskit / Aer have strict
 # cross-version requirements and silent breakage is common across minor bumps.
 
 annotated-types==0.7.0
 antlr4-python3-runtime==4.13.2
+catboost==1.2.10
 certifi==2026.4.22
 cffi==2.0.0
 charset-normalizer==3.4.7
@@ -23,6 +25,7 @@ cryptography==47.0.0
 cycler==0.12.1
 dill==0.4.1
 fonttools==4.62.1
+graphviz==0.21
 ibm-cloud-sdk-core==3.24.4
 ibm-platform-services==0.75.0
 ibm-quantum-schemas==0.7.20260419
@@ -31,6 +34,7 @@ joblib==1.5.3
 kiwisolver==1.5.0
 matplotlib==3.10.9
 mqt.bench==2.2.2
+narwhals==2.20.0
 networkx==3.6.1
 numpy==2.4.4
 openqasm3==1.0.1
@@ -38,6 +42,7 @@ orjson==3.11.8
 packaging==26.2
 pandas==3.0.2
 pillow==12.2.0
+plotly==6.7.0
 psutil==7.2.2
 py4j==0.10.7
 pybase64==1.4.3

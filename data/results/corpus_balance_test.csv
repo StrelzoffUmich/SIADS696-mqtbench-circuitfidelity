@@ -1,0 +1,17 @@
+corpus,n_circ,feature_set,model,shuf_r2,group_r2
+"Original (132, unbalanced)",132,Full 36,RF,0.8892689536317798,-0.7073747965242191
+"Original (132, unbalanced)",132,Full 36,CatBoost,0.910004008216751,-0.2108718006954664
+"Original (132, unbalanced)",132,Non-rigid 13,RF,0.861963742139301,-0.31307909777175774
+"Original (132, unbalanced)",132,Non-rigid 13,CatBoost,0.9085286915601749,-0.31476328074094667
+"Balanced-5 (~83 circ, 5 per algo)",83,Full 36,RF,0.7129523802962348,0.23898882140542677
+"Balanced-5 (~83 circ, 5 per algo)",83,Full 36,CatBoost,0.7510440925250311,0.3100654321419494
+"Balanced-5 (~83 circ, 5 per algo)",83,Non-rigid 13,RF,0.716928774374489,0.2431215236377627
+"Balanced-5 (~83 circ, 5 per algo)",83,Non-rigid 13,CatBoost,0.7600147260513254,0.2754624640019489
+"Balanced-7 (~115 circ, 7 per algo)",115,Full 36,RF,0.7356651121784272,0.10429320372092196
+"Balanced-7 (~115 circ, 7 per algo)",115,Full 36,CatBoost,0.8469118556503379,0.17489516420974488
+"Balanced-7 (~115 circ, 7 per algo)",115,Non-rigid 13,RF,0.8280285268645653,0.23270489783646164
+"Balanced-7 (~115 circ, 7 per algo)",115,Non-rigid 13,CatBoost,0.8920344926327818,0.2924252747017978
+"Balanced-3 (51 circ, 3 per algo, smallest)",51,Full 36,RF,0.686618705427754,-0.5554089506127022
+"Balanced-3 (51 circ, 3 per algo, smallest)",51,Full 36,CatBoost,0.7714562822479252,-0.004577132100015269
+"Balanced-3 (51 circ, 3 per algo, smallest)",51,Non-rigid 13,RF,0.6422791536831578,-0.21735972369813922
+"Balanced-3 (51 circ, 3 per algo, smallest)",51,Non-rigid 13,CatBoost,0.7259083720983354,0.21416867723302596

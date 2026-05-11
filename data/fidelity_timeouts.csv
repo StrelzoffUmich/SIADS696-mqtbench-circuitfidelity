@@ -1,0 +1,11 @@
+file,algo,n,seed_idx,stage,num_qubits,depth,size,num_2q_gates,num_multi_qubit_gates,post_transpile_depth,post_transpile_size
+grover_indep_none_10_s0.qasm,grover,10,0,noisy_sim,10,19,37,0,18,40742,76725
+grover_indep_none_10_s1.qasm,grover,10,1,noisy_sim,10,19,37,0,18,40742,76725
+grover_indep_none_10_s2.qasm,grover,10,2,noisy_sim,10,19,37,0,18,40742,76725
+grover_indep_none_11_s0.qasm,grover,11,0,noisy_sim,11,27,47,0,26,81519,150645
+grover_indep_none_11_s1.qasm,grover,11,1,noisy_sim,11,27,47,0,26,81519,150645
+grover_indep_none_11_s2.qasm,grover,11,2,noisy_sim,11,27,47,0,26,81519,150645
+grover_indep_none_12_s0.qasm,grover,12,0,noisy_sim,12,37,59,0,36,148943,270949
+grover_indep_none_12_s1.qasm,grover,12,1,noisy_sim,12,37,59,0,36,148943,270949
+grover_indep_none_12_s2.qasm,grover,12,2,noisy_sim,12,37,59,0,36,148943,270949
+qwalk_indep_none_12_s0.qasm,qwalk,12,0,noisy_sim,12,7257,9794,4086,631,19302,36845
