@@ -42,10 +42,15 @@ from qiskit import qasm2
 # v2.x (the unified vqe_real_amp/vqe_su2/vqe_two_local API).
 PARAMETERIZABLE = [
     "qaoa", "vqe_su2", "vqe_real_amp", "vqe_two_local", "qnn",
+    "bmw_quark_cardinality",  # 27 symbolic params, all N
+    # bmw_quark_copula has 28 params but requires even N; skipped at the
+    # validator's N=5 test point. Manually verified at N=4.
 ]
 DETERMINISTIC = [
     "ghz", "qft", "qftentangled", "wstate", "bv", "dj",
     "qpeexact", "qpeinexact", "qwalk", "randomcircuit",
+    "hhl",  # newly added — confirmed no symbolic params (ae and ghz_dynamic
+    # fail QASM-2 serialization downstream; excluded from corpus)
 ]
 
 N_TEST = 5
