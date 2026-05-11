@@ -178,6 +178,15 @@ def _edge_weight_gini(g: nx.Graph) -> float:
     return float((n + 1 - 2 * np.sum(cum) / cum[-1]) / n) if cum[-1] > 0 else 0.0
 
 
+def _edge_weight_stats(g: nx.Graph) -> tuple[float, float]:
+    """Mean and max of edge-weight distribution on G_2q."""
+    weights = np.array([d.get("weight", 1) for _, _, d in g.edges(data=True)],
+                       dtype=float)
+    if weights.size == 0:
+        return 0.0, 0.0
+    return float(weights.mean()), float(weights.max())
+
+
 def _adjacency_spectrum(g: nx.Graph) -> np.ndarray:
     if g.number_of_nodes() < 1:
         return np.array([0.0])
@@ -269,6 +278,12 @@ def _connectivity_buildup(qc: QuantumCircuit) -> dict[str, float]:
         first half of DAG layers — captures *when* connectivity emerges.
     time_to_connected: fraction of total depth at which the interaction graph
         first becomes connected (1.0 if it never does).
+
+    Uses Union-Find for connectivity detection so the time-to-connected check
+    is O(α(n)) per edge rather than O(|V|+|E|) per layer. Fiedler is computed
+    once at half-depth via a single eigendecomposition. Total cost is dominated
+    by the half-depth eigendecomposition (n×n) plus a single O(total_gates)
+    pass — tractable even on deeply transpiled circuits with 10,000+ layers.
     """
     dag = circuit_to_dag(qc)
     dag.remove_all_ops_named("barrier")
@@ -284,6 +299,15 @@ def _connectivity_buildup(qc: QuantumCircuit) -> dict[str, float]:
     time_to_connected_frac = 1.0
     is_connected = False
 
+    # Union-Find for incremental connectivity detection
+    parent = list(range(n))
+    def _find(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+    n_components = n
+
     for i, layer in enumerate(layers):
         for op in layer["partition"]:
             if len(op) >= 2:
@@ -291,19 +315,20 @@ def _connectivity_buildup(qc: QuantumCircuit) -> dict[str, float]:
                 for ai, a in enumerate(qubits):
                     for b in qubits[ai + 1:]:
                         pair_counts[(a, b)] += 1
+                        if not is_connected:
+                            ra, rb = _find(a), _find(b)
+                            if ra != rb:
+                                parent[ra] = rb
+                                n_components -= 1
+        if not is_connected and n_components == 1:
+            time_to_connected_frac = (i + 1) / total
+            is_connected = True
         if i + 1 == half:
             g = nx.Graph()
             g.add_nodes_from(range(n))
             g.add_edges_from(pair_counts)
             eigs = _laplacian_spectrum(g, weighted=False)
             fiedler_half = float(eigs[1]) if len(eigs) >= 2 else 0.0
-        if not is_connected:
-            g = nx.Graph()
-            g.add_nodes_from(range(n))
-            g.add_edges_from(pair_counts)
-            if nx.is_connected(g):
-                time_to_connected_frac = (i + 1) / total
-                is_connected = True
 
     return {
         "fiedler_at_half_depth": fiedler_half,
@@ -311,25 +336,11 @@ def _connectivity_buildup(qc: QuantumCircuit) -> dict[str, float]:
     }
 
 
-# --- Device-topology-aware mismatch (FakeBrisbane = heavy-hex, max deg 3) -
-
-DEVICE_MAX_DEGREE = 3  # FakeBrisbane / heavy-hex IBM topology
-
-
-def _device_mismatch(g: nx.Graph) -> dict[str, float]:
-    """How much does the circuit's interaction graph exceed the device's
-    coupling capacity? Higher = more SWAP overhead at transpile time."""
-    if g.number_of_nodes() < 1:
-        return {"excess_degree_max": 0.0,
-                "excess_degree_mean": 0.0,
-                "pct_qubits_over_device_degree": 0.0}
-    degrees = np.array([d for _, d in g.degree])
-    excess = np.maximum(0, degrees - DEVICE_MAX_DEGREE)
-    return {
-        "excess_degree_max": float(excess.max()),
-        "excess_degree_mean": float(excess.mean()),
-        "pct_qubits_over_device_degree": float((excess > 0).mean()),
-    }
+# NOTE: device-topology mismatch features (excess_degree_*, pct_qubits_over_device_degree)
+# were removed on 2026-05-07. The project's scope is algorithmic-level features only —
+# features that don't reference any specific hardware topology so insights generalize
+# across quantum platforms. Hardware-aware features may return as a sensitivity-analysis
+# sub-experiment but are out of scope for the primary analysis.
 
 
 def candidate_features(qc: QuantumCircuit) -> dict[str, float]:
@@ -361,7 +372,7 @@ def candidate_features(qc: QuantumCircuit) -> dict[str, float]:
     n_nodes = g_topo.number_of_nodes()
     n_edges = g_topo.number_of_edges()
     buildup = _connectivity_buildup(qc)
-    mismatch = _device_mismatch(g_topo)
+    edge_w_mean, edge_w_max = _edge_weight_stats(g_2q)
 
     return {
         # Spectral on G_topo (cliques included)
@@ -382,7 +393,12 @@ def candidate_features(qc: QuantumCircuit) -> dict[str, float]:
         # Spectral on G_2q (2q multiplicity)
         "fiedler_2q_weighted": _fiedler(g_2q, weighted=True),
         "spectral_entropy_2q_weighted": _spectral_entropy(g_2q, weighted=True),
+        # Multiplicity-aware scalars on G_2q (NOT spectral — these compress
+        # edge-weight distribution into MQT-style summary stats so the
+        # experiment harness can isolate "weight matters" from "spectrum matters".)
         "gini_2q_multiplicity": _edge_weight_gini(g_2q),
+        "edge_weight_mean_2q": edge_w_mean,
+        "edge_weight_max_2q": edge_w_max,
         # Adjacency spectrum on G_topo
         "log_estrada_index": (
             float(np.log1p(np.sum(np.exp(eigs_a)))) if has_edges else 0.0
@@ -407,10 +423,6 @@ def candidate_features(qc: QuantumCircuit) -> dict[str, float]:
         # Connectivity buildup (temporal)
         "fiedler_at_half_depth": buildup["fiedler_at_half_depth"],
         "time_to_connected": buildup["time_to_connected"],
-        # Device-topology mismatch (FakeBrisbane heavy-hex, max degree 3)
-        "excess_degree_max": mismatch["excess_degree_max"],
-        "excess_degree_mean": mismatch["excess_degree_mean"],
-        "pct_qubits_over_device_degree": mismatch["pct_qubits_over_device_degree"],
         # Sanity flag
         "has_2q_interactions": float(has_2q_edges),
     }

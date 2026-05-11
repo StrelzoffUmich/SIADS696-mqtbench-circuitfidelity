@@ -37,23 +37,93 @@ def setup() -> None:
 
 
 def feature_correlation_heatmap(features: pd.DataFrame) -> None:
-    """Pearson correlation matrix across all features. Shows MQT/ours block structure."""
+    """Pearson correlation matrix with explicit MQT-vs-ours coloring.
+
+    Coloured ribbons on the axes mark each feature as MQT-baseline (blue) or
+    our addition (orange). Diagonal block frames are drawn around each
+    quadrant of the matrix so the within-block structure stands out.
+    """
     feat_cols = [c for c in features.columns if c not in META_COLS]
     cand_cols = [c for c in feat_cols if c not in MQT_COLS]
     ordered = MQT_COLS + cand_cols
     corr = features[ordered].corr()
-    fig, ax = plt.subplots(figsize=(14, 12))
-    sns.heatmap(corr, ax=ax, cmap="RdBu_r", center=0, vmin=-1, vmax=1,
-                square=True, cbar_kws={"label": "Pearson r"},
-                xticklabels=True, yticklabels=True)
-    # Visual divider between MQT and ours blocks
-    boundary = len(MQT_COLS)
-    ax.axhline(boundary, color="black", lw=2)
-    ax.axvline(boundary, color="black", lw=2)
-    ax.set_title("Feature correlation matrix\n"
-                 f"(top-left {boundary}×{boundary}: MQT baseline; "
-                 f"bottom-right {len(cand_cols)}×{len(cand_cols)}: our additions)")
-    plt.savefig(FIGS / "01_feature_correlation_heatmap.png")
+    n_mqt = len(MQT_COLS)
+    n_ours = len(cand_cols)
+    n_tot = n_mqt + n_ours
+
+    palette = {"MQT": "#3b82c4", "ours": "#e6803a"}
+    sources = ["MQT"] * n_mqt + ["ours"] * n_ours
+
+    fig = plt.figure(figsize=(15, 13))
+    gs = fig.add_gridspec(
+        2, 2,
+        width_ratios=[14, 0.7],
+        height_ratios=[0.30, 14],
+        wspace=0.05, hspace=0.05,
+    )
+    ax_top = fig.add_subplot(gs[0, 0])
+    ax_main = fig.add_subplot(gs[1, 0])
+    ax_cbar = fig.add_subplot(gs[1, 1])
+
+    # main heatmap
+    sns.heatmap(
+        corr, ax=ax_main, cmap="RdBu_r", center=0, vmin=-1, vmax=1,
+        square=True, cbar_ax=ax_cbar, cbar_kws={"label": "Pearson r"},
+        xticklabels=True, yticklabels=True,
+    )
+    # Recolour tick labels by source (orange = ours, blue = MQT)
+    for tick, src in zip(ax_main.get_xticklabels(), sources):
+        tick.set_color(palette[src])
+        tick.set_fontweight("bold" if src == "ours" else "normal")
+    for tick, src in zip(ax_main.get_yticklabels(), sources):
+        tick.set_color(palette[src])
+        tick.set_fontweight("bold" if src == "ours" else "normal")
+
+    # Top ribbon — align exactly to main heatmap's rendered bbox
+    ax_top.imshow(
+        np.array([[0] * n_mqt + [1] * n_ours]),
+        aspect="auto", cmap=plt.matplotlib.colors.ListedColormap(
+            [palette["MQT"], palette["ours"]]),
+        extent=(0, n_tot, 0, 1),
+    )
+    ax_top.set_xlim(0, n_tot)
+    ax_top.set_ylim(0, 1)
+    ax_top.set_xticks([]); ax_top.set_yticks([])
+    ax_top.text(n_mqt / 2, 0.5, f"MQT baseline ({n_mqt})",
+                ha="center", va="center", color="white",
+                fontweight="bold", fontsize=11)
+    ax_top.text(n_mqt + n_ours / 2, 0.5, f"our additions ({n_ours})",
+                ha="center", va="center", color="white",
+                fontweight="bold", fontsize=11)
+    # square=True on heatmap shrinks ax_main below its gridspec box; force
+    # the ribbon to match ax_main's actual rendered horizontal extent.
+    fig.canvas.draw()
+    main_box = ax_main.get_position()
+    top_box = ax_top.get_position()
+    ax_top.set_position([main_box.x0, top_box.y0,
+                         main_box.width, top_box.height])
+
+    # Diagonal block borders on the main heatmap
+    from matplotlib.patches import Rectangle
+    ax_main.add_patch(Rectangle((0, 0), n_mqt, n_mqt,
+                                fill=False, edgecolor=palette["MQT"], lw=2.5))
+    ax_main.add_patch(Rectangle((n_mqt, n_mqt), n_ours, n_ours,
+                                fill=False, edgecolor=palette["ours"], lw=2.5))
+    ax_main.add_patch(Rectangle((n_mqt, 0), n_ours, n_mqt,
+                                fill=False, edgecolor="black", lw=1.5,
+                                linestyle="--"))
+    ax_main.add_patch(Rectangle((0, n_mqt), n_mqt, n_ours,
+                                fill=False, edgecolor="black", lw=1.5,
+                                linestyle="--"))
+
+    fig.suptitle(
+        "Feature correlation matrix — MQT baseline vs our additions\n"
+        f"(top-left {n_mqt}×{n_mqt} blue: MQT internal; "
+        f"bottom-right {n_ours}×{n_ours} orange: ours internal; "
+        f"dashed off-diagonal: cross-block correlation)",
+        y=0.99, fontsize=12,
+    )
+    plt.savefig(FIGS / "01_feature_correlation_heatmap.png", bbox_inches="tight")
     plt.close(fig)
 
 

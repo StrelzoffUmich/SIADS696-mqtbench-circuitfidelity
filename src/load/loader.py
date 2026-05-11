@@ -142,16 +142,30 @@ def generate(args: argparse.Namespace) -> tuple[int, int, int]:
                     random.seed(seed)
                     np.random.seed(seed)
                     target = build_target(args.level, args.target, n)
+                    # MQT Bench bug bypass: get_benchmark(random_parameters=True)
+                    # uses np.random.default_rng(10) — a hardcoded seed at
+                    # benchmark_generation.py:81 — so every call yields the
+                    # same parameter values regardless of any external seeding.
+                    # We pass random_parameters=False to get the parametric
+                    # circuit, then assign symbolic parameters with our own
+                    # per-seed RNG. Truly-deterministic algorithms (no
+                    # qc.parameters) skip the assign step and hash-dedup will
+                    # collapse identical outputs across seeds.
                     kwargs = dict(
                         benchmark=algo,
                         level=level_enum,
                         circuit_size=n,
-                        random_parameters=True,
+                        random_parameters=False,
                     )
                     if target is not None:
                         kwargs["target"] = target
                         kwargs["opt_level"] = args.opt_level
                     qc = get_benchmark(**kwargs)
+                    if len(qc.parameters) > 0:
+                        rng = np.random.default_rng(seed)
+                        param_dict = {p: rng.uniform(0, 2 * np.pi)
+                                      for p in qc.parameters}
+                        qc.assign_parameters(param_dict, inplace=True)
                 except Exception as e:
                     print(f"  skip {algo}@{n}.s{seed_idx}: {e}", file=sys.stderr)
                     skipped += 1
