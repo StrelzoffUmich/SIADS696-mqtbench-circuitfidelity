@@ -22,3 +22,10 @@ Thumbs.db
 
 # Jupyter checkpoints
 .ipynb_checkpoints/
+
+# Log files — noisy, regenerated on every run, not reproducible state
+*.log
+
+# Scratch / dryrun output dirs
+data/qasm_dryrun/
+data/dryrun_*/
