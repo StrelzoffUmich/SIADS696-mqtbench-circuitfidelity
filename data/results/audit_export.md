@@ -18,7 +18,7 @@ R² = 0 means equivalent to predicting the corpus mean. Anything substantially a
 | From num_qubits only (RF) | 0.138 | [0.052, 0.208] |
 | **From (num_qubits + num_2q_gates) (RF)** | **0.568** | [0.395, 0.758] |
 
-→ source: `data/results/multimodel_baselines.csv`
+→ source: `data/results/pre_10k/multimodel_baselines.csv`
 
 ---
 
@@ -32,7 +32,7 @@ Each cell: per-fold GridSearchCV-tuned model. Bootstrap 95% CI from 50 fold-resa
 | **Option A (22 features)** | 0.819 | 0.884 | 0.897 | **0.924** [0.850, 0.962] |
 | **Full (36 features)** | 0.849 | 0.889 | 0.892 | **0.929** [0.859, 0.962] |
 
-→ source: `data/results/multimodel_comparison.csv`
+→ source: `data/results/pre_10k/multimodel_comparison.csv`
 
 **Reading:**
 - CatBoost wins every cell.
@@ -100,7 +100,7 @@ Top 5 features by SHAP rank, with concordance across attribution methods:
 
 Spearman rank correlation between SHAP and CatBoost-internal: **0.805**.
 
-→ source: `data/results/fidelity_feature_importance.csv`
+→ source: `data/results/pre_10k/fidelity_feature_importance.csv`
 
 ---
 
@@ -129,7 +129,7 @@ Removing the 23 class-rigid features (constant within ≥3 of 17 algorithm class
 
 **Methodological implication:** the surviving "ours" features are predominantly *static* spectral graph invariants — six of eight are Laplacian/adjacency-spectral on the multi-qubit-clique-aware interaction graph. The previously-top SHAP features (`fiedler_at_half_depth`, `time_to_connected`) are dropped, confirming the auditor's Concern 4 was substantially correct: those features partly encoded class identity, with the encoding hurting cross-class generalization.
 
-→ source: `data/results/rigid_feature_ablation.csv`, figure 13.
+→ source: `data/results/pre_10k/rigid_feature_ablation.csv`, figure 13.
 
 ---
 
@@ -146,7 +146,7 @@ Best clustering configurations across 111 (method × preprocessing × parameter)
 
 **Key finding:** **Density-based clustering on standardized features achieves NMI=0.78 with algorithm-class labels** — substantial mutual information between unsupervised clusters and the held-out ground truth. The feature space encodes algorithm-family structure without needing labels.
 
-→ source: `data/results/unsupervised_full_grid.csv`
+→ source: `data/results/pre_10k/unsupervised_full_grid.csv`
 
 ---
 
@@ -196,21 +196,21 @@ Putting all the numbers together:
 
 | Path | Contents |
 |---|---|
-| `data/results/multimodel_comparison.csv` | 24 (model × view × CV) configs |
-| `data/results/multimodel_baselines.csv` | 6 trivial-baseline configs |
-| `data/results/unsupervised_full_grid.csv` | 111 clustering configs |
-| `data/results/feature_compression_comparison.csv` | Compression Options A/B/C |
-| `data/results/feature_compression_candidates.csv` | Per-feature compression candidate flags |
-| `data/results/feature_correlation_pairs.csv` | 38 high-correlation pairs |
-| `data/results/fidelity_feature_importance.csv` | MDI + permutation importance |
-| `data/results/fidelity_grouped_permutation.csv` | MQT-block vs ours-block permutation |
-| `data/results/fidelity_per_algorithm_mse.csv` | Per-algo test MSE breakdown |
-| `data/results/fidelity_per_fold.csv` | Per-fold R² + MSE detail |
-| `data/results/fidelity_model_comparison.csv` | RF-vs-RF earlier comparison |
-| `data/results/feature_independence_r2_3way.csv` | Linear / RF-shuf / RF-group R² |
-| `data/results/partial_correlations.csv` | Partial correlations controlling for size |
-| `data/results/per_algorithm_fiedler_variance.csv` | Per-algo within-class variance |
-| `data/results/per_algorithm_feature_means.csv` | Per-algo z-scored means |
+| `data/results/pre_10k/multimodel_comparison.csv` | 24 (model × view × CV) configs |
+| `data/results/pre_10k/multimodel_baselines.csv` | 6 trivial-baseline configs |
+| `data/results/pre_10k/unsupervised_full_grid.csv` | 111 clustering configs |
+| `data/results/pre_10k/feature_compression_comparison.csv` | Compression Options A/B/C |
+| `data/results/pre_10k/feature_compression_candidates.csv` | Per-feature compression candidate flags |
+| `data/results/pre_10k/feature_correlation_pairs.csv` | 38 high-correlation pairs |
+| `data/results/pre_10k/fidelity_feature_importance.csv` | MDI + permutation importance |
+| `data/results/pre_10k/fidelity_grouped_permutation.csv` | MQT-block vs ours-block permutation |
+| `data/results/pre_10k/fidelity_per_algorithm_mse.csv` | Per-algo test MSE breakdown |
+| `data/results/pre_10k/fidelity_per_fold.csv` | Per-fold R² + MSE detail |
+| `data/results/pre_10k/fidelity_model_comparison.csv` | RF-vs-RF earlier comparison |
+| `data/results/pre_10k/feature_independence_r2_3way.csv` | Linear / RF-shuf / RF-group R² |
+| `data/results/pre_10k/partial_correlations.csv` | Partial correlations controlling for size |
+| `data/results/pre_10k/per_algorithm_fiedler_variance.csv` | Per-algo within-class variance |
+| `data/results/pre_10k/per_algorithm_feature_means.csv` | Per-algo z-scored means |
 | `data/results/figures/*.png` | 9 figures |
 
 ---
